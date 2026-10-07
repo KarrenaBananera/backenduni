@@ -13,7 +13,7 @@ public class CartItem
 
     public Cart Cart { get; set; } = null!;
 
-    public Guid ProductId { get; set; }
+    public int ProductId { get; set; }
 
     public Product Product { get; set; } = null!;
 
