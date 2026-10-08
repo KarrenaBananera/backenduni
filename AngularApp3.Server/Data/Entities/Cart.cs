@@ -1,8 +1,9 @@
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace AngularApp3.Server.Data.Entities;
 
+[Index(nameof(UserId), IsUnique = true)]
 public class Cart
 {
     public Guid Id { get; set; } = Guid.NewGuid();
