@@ -1,6 +1,8 @@
 using AngularApp3.Server.Data;
 using AngularApp3.Server.Data.Entities;
-using AngularApp3.Server.Extensions;
+using AngularApp3.Server.Identity;
+using AngularApp3.Server.Repositories;
+using AngularApp3.Server.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +10,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddDataProtection();
 
 builder.Services
     .AddIdentityCore<ApplicationUser>(options =>
@@ -23,8 +27,7 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddApplicationServices();
-builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddScoped<IProductReadRepository, ProductReadRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -47,5 +50,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
+
+await IdentityDataSeeder.SeedRolesAsync(app.Services);
 
 app.Run();
