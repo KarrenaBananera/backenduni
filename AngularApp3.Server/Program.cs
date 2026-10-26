@@ -1,10 +1,15 @@
+using System.Text;
+using AngularApp3.Server.Configuration;
 using AngularApp3.Server.Data;
 using AngularApp3.Server.Data.Entities;
 using AngularApp3.Server.Identity;
 using AngularApp3.Server.Repositories;
+using AngularApp3.Server.Services;
 using AngularApp3.Server.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +32,36 @@ builder.Services
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(JwtOptions.SectionName));
+var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
+    ?? throw new InvalidOperationException("Jwt configuration section is missing.");
+
+if (string.IsNullOrWhiteSpace(jwt.Key) || jwt.Key.Length < 32)
+{
+    throw new InvalidOperationException("Jwt:Key must be at least 32 characters.");
+}
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwt.Issuer,
+            ValidAudience = jwt.Audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
+            ClockSkew = TimeSpan.FromMinutes(1),
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductReadRepository, ProductReadRepository>();
 
 builder.Services.AddControllers();
