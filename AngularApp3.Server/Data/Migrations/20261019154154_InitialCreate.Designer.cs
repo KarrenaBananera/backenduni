@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AngularApp3.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20261008154558_InitialCreate")]
+    [Migration("20261019154154_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -150,6 +150,10 @@ namespace AngularApp3.Server.Data.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Characteristics")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");

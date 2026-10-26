@@ -64,6 +64,7 @@ namespace AngularApp3.Server.Data.Migrations
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Rating = table.Column<float>(type: "real", nullable: false),
                     Images = table.Column<List<string>>(type: "text[]", nullable: false),
+                    Characteristics = table.Column<string>(type: "jsonb", nullable: false),
                     StockQuantity = table.Column<int>(type: "integer", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
