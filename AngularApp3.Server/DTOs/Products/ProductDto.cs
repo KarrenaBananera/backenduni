@@ -8,6 +8,7 @@ public class ProductDto
     public decimal Price { get; set; }
     public float Rating { get; set; }
     public List<string> Images { get; set; } = [];
+    public Dictionary<string, string> Characteristics { get; set; } = new();
     public int StockQuantity { get; set; }
     public DateTime CreatedAt { get; set; }
 }

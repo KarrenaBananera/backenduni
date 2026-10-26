@@ -65,6 +65,7 @@ builder.Services.AddRedis(builder.Configuration);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductReadRepository, ProductReadRepository>();
+builder.Services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
 builder.Services.AddScoped<ICachedProductService, CachedProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
