@@ -20,6 +20,9 @@ public class Product
     [MinLength(3)]
     public List<string> Images { get; set; } = [];
 
+    [Column(TypeName = "jsonb")]
+    public string Characteristics { get; set; } = "{}";
+
     public int StockQuantity { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

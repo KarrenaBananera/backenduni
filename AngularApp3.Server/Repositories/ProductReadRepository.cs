@@ -1,3 +1,4 @@
+using System.Text.Json;
 using AngularApp3.Server.Data;
 using AngularApp3.Server.Data.Entities;
 using AngularApp3.Server.DTOs.Products;
@@ -30,21 +31,23 @@ public class ProductReadRepository : IProductReadRepository
         var totalItems = await products.CountAsync(cancellationToken);
         var totalPages = totalItems == 0 ? 0 : (int)Math.Ceiling(totalItems / (double)limit);
 
-        var items = await products
+        var pageItems = await products
             .Skip((page - 1) * limit)
             .Take(limit)
-            .Select(p => new ProductDto
-            {
-                Id = p.Id,
-                Title = p.Title,
-                Description = p.Description,
-                Price = p.Price,
-                Rating = p.Rating,
-                Images = p.Images,
-                StockQuantity = p.StockQuantity,
-                CreatedAt = p.CreatedAt
-            })
             .ToListAsync(cancellationToken);
+
+        var items = pageItems.Select(p => new ProductDto
+        {
+            Id = p.Id,
+            Title = p.Title,
+            Description = p.Description,
+            Price = p.Price,
+            Rating = p.Rating,
+            Images = p.Images,
+            Characteristics = JsonSerializer.Deserialize<Dictionary<string, string>>(p.Characteristics) ?? new(),
+            StockQuantity = p.StockQuantity,
+            CreatedAt = p.CreatedAt
+        }).ToList();
 
         return new PagedProductsResponse
         {
