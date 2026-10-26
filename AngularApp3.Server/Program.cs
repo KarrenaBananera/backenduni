@@ -2,6 +2,7 @@ using System.Text;
 using AngularApp3.Server.Configuration;
 using AngularApp3.Server.Data;
 using AngularApp3.Server.Data.Entities;
+using AngularApp3.Server.Extensions;
 using AngularApp3.Server.Identity;
 using AngularApp3.Server.Repositories;
 using AngularApp3.Server.Services;
@@ -60,9 +61,11 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddRedis(builder.Configuration);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductReadRepository, ProductReadRepository>();
+builder.Services.AddScoped<ICachedProductService, CachedProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddControllers();

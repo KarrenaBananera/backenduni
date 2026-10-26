@@ -8,9 +8,9 @@ namespace AngularApp3.Server.Controllers;
 [Route("api/products")]
 public class ProductsController : ControllerBase
 {
-    private readonly IProductService _productService;
+    private readonly ICachedProductService _productService;
 
-    public ProductsController(IProductService productService)
+    public ProductsController(ICachedProductService productService)
     {
         _productService = productService;
     }
