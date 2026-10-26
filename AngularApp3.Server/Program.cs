@@ -63,6 +63,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IProductReadRepository, ProductReadRepository>();
+builder.Services.AddScoped<ICartService, CartService>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -87,5 +88,6 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 await IdentityDataSeeder.SeedRolesAsync(app.Services);
+await PromoCodeSeeder.SeedAsync(app.Services);
 
 app.Run();
