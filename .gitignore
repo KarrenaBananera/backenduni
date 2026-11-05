@@ -362,3 +362,4 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /angularapp3.client
+/AngularApp3.Server/AngularApp3.Server.http

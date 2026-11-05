@@ -70,6 +70,9 @@ builder.Services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
 builder.Services.AddScoped<ICachedProductService, CachedProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
 
+builder.Services.Configure<SupabaseStorageOptions>(builder.Configuration.GetSection(SupabaseStorageOptions.SectionName));
+builder.Services.AddScoped<IImageStorage, SupabaseImageStorage>();
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
