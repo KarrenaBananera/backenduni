@@ -61,6 +61,7 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddFrontendCors(builder.Configuration);
 builder.Services.AddRedis(builder.Configuration);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -83,6 +84,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(CorsOptions.PolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();
