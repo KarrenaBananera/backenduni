@@ -1,0 +1,42 @@
+:root {
+  --primary-buttons-color: #F54900;
+  --selected-button-color: oklch(55.3% 0.195 38.402);
+  
+  --borders-color: #E5E7EB;
+  --main-font: 'Inter';
+}
+
+ *{
+    font-family: var(--main-font);
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+ }
+
+
+ .toast-container.toast-top-right {
+  top: 60px; 
+}
+
+.toast-success {
+  font-family: var(--main-font);
+  color: #101828 !important;
+  font-size: 12px !important;
+  background-color: #ffffff !important;
+  font-weight: 300 !important;
+  padding-left: 30px !important; 
+  box-shadow: none !important;
+  border: 2px solid var(--borders-color);
+}
+
+.toast-success::before {
+  content: "✓";                    
+  position: absolute;
+  left: 15px;                     
+  top: 50%;
+  transform: translateY(-60%);
+  font-size: 20px;                 
+  color: #101828;                 
+  font-weight: bold;
+}

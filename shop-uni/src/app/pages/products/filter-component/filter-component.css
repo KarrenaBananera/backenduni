@@ -1,0 +1,162 @@
+.filter-container {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: 100%;
+  border: 1px solid var(--borders-color);
+  border-radius: 10px;
+  padding: 25px;
+  gap: 32px;
+}
+
+.filter-label {
+  font-family: 'Inter';
+  font-size: 18px;
+  font-weight: 600;
+  color: #0a0a0a;
+  line-height: 27px;
+  letter-spacing: -0.44px;
+  margin-bottom: 12px;
+}
+
+.price-labels {
+  font-family: 'Inter';
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;  
+  letter-spacing: -0.15px;
+  color: #4A5565;
+
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.clear-btn {
+  font-family: 'Inter';
+  background: transparent;
+  width: 150px;
+  height: 38px;
+  border: 1px solid var(--primary-buttons-color);
+  color: var(--primary-buttons-color);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  letter-spacing: -0.15px;
+  padding: 8px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+
+.clear-btn:hover {
+  background-color: oklch(98% 0.016 73.684);
+  color: oklch(55.3% 0.195 38.402);
+}
+
+@media (min-width: 760px) {
+  .filter-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;    
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    flex: 1 1 0;
+    margin-bottom: 0;
+    min-width: 150px;
+  }
+
+  .button-group {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;    
+  }
+
+  .clear-btn {
+    margin-top: 0;      
+  }
+}
+
+.checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.checkboxe {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  font-family: 'Inter';
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 14px;
+  letter-spacing: -0.15px;
+  color: #0A0A0A;
+  cursor: pointer;
+}
+
+  .checkboxe::before {
+  content: "";
+  width: 16px;
+  height: 16px;
+  border: 1px solid #aaaaaa83;
+  border-radius: 4px;
+  background: #F3F3F5;  
+  display: inline-block;
+  box-sizing: border-box;
+  transition: background-color 0.2s, border-color 0.2s;
+  flex-shrink: 0;       
+}
+
+.checkboxe.active::before {
+  background-color: black;
+  border-color: black;
+  content: "✓";
+  color: white;
+  font-size: 14px;
+  line-height: 16px;  
+  text-align: center;
+  font-weight: bold;
+}
+
+
+:host ::ng-deep .ngx-slider .ngx-slider-bar,
+:host ::ng-deep .ngx-slider .ngx-slider-selection {
+  height: 14px;          
+  border-radius: 10px;    
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-bar {
+  background: gray;
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-selection {
+  background: black;
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-pointer {
+  width: 14px;          
+  height: 14px;
+  background: white;
+  border: 1px solid black;
+  border-radius: 50%;
+  top: 0px            
+}
+
+:host ::ng-deep .ngx-slider .ngx-slider-pointer:after {
+  display: none;
+}
+
+.slider-container {
+  margin-top: -30px; 
+}

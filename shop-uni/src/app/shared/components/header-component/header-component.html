@@ -1,0 +1,50 @@
+<header class="header">
+  <div class ="header-content">
+  <div class="header-top">
+    <div class="logo-container" routerLink="/">
+      <div  class="logo">BM</div>
+      <span class="brand-name">BuildMart</span>
+    </div>
+
+    <nav class="desktop-nav">
+      <a routerLink="/">Products</a>
+      <a href="#">Categories</a>
+      <a href="#">Deals</a>
+      <a href="#">About</a>
+    </nav>
+
+    <div class="desktop-search">
+      <div class="search-box">
+      <input type="text" placeholder="Search products...">
+      <span class="search-icon">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      </span>
+    </div>
+    </div>
+
+    <div class="header-right">
+      <a routerLink="/cart" class="cart-link">
+        <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+        <span class="cart-badge">{{cart.productsCount()}}</span>
+      </a>
+      <button class="menu-button" (click)="onDropDownClick()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu w-5 h-5" ё=""><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+         </button>
+    </div>
+  </div>
+  </div>
+  <div class="dropdown-menu" [class.active]="dropDownOn">
+    <div class="search-box">
+      <input type="text" placeholder="Search products...">
+      <span class="search-icon">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+      </span>
+    </div>
+    <nav class="dropdown-nav">
+      <a routerLink="/">Products</a>
+      <a href="#">Categories</a>
+      <a href="#">Deals</a>
+      <a href="#">About</a>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,18 @@
+<div class="product-card" (click)="onCardClick()">
+  <div class="product-image">
+    <img [ngSrc]="product().imageUrl" [alt]="product().name" height="500" width="500">
+  </div>
+  <div class="product-info">
+    <h3 class="product-title">{{product().name}}</h3>
+    <div class="product-rating">
+      <app-stars-component [rating]="product().rating"/>
+      <span style="color: #7f8c8d;">({{product().rating}})</span>
+    </div>
+    <div class="product-price">{{product().price}}$</div>
+    <div class="product-meta">{{product().category}}</div>
+    <div class="product-button" (click)="onAddToCartClick($event)">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cart-icon"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+      Add to Cart
+    </div>
+  </div>
+</div>
