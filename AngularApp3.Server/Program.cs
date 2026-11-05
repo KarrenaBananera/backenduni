@@ -7,8 +7,10 @@ using AngularApp3.Server.Identity;
 using AngularApp3.Server.Repositories;
 using AngularApp3.Server.Services;
 using AngularApp3.Server.Services.Interfaces;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -62,9 +64,25 @@ builder.Services
 
 builder.Services.AddAuthorization();
 builder.Services.AddFrontendCors(builder.Configuration);
+
+var antiforgerySameSite = builder.Configuration["Antiforgery:SameSite"];
+var sameSite = antiforgerySameSite?.Equals("None", StringComparison.OrdinalIgnoreCase) == true
+    ? SameSiteMode.None
+    : SameSiteMode.Lax;
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-XSRF-TOKEN";
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = sameSite;
+    options.Cookie.SecurePolicy = sameSite == SameSiteMode.None
+        ? CookieSecurePolicy.Always
+        : CookieSecurePolicy.SameAsRequest;
+});
 builder.Services.AddRedis(builder.Configuration);
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserAdminService, UserAdminService>();
 builder.Services.AddScoped<IProductReadRepository, ProductReadRepository>();
 builder.Services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
 builder.Services.AddScoped<ICachedProductService, CachedProductService>();
@@ -73,7 +91,10 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.Configure<SupabaseStorageOptions>(builder.Configuration.GetSection(SupabaseStorageOptions.SectionName));
 builder.Services.AddScoped<IImageStorage, SupabaseImageStorage>();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -90,6 +111,28 @@ app.UseHttpsRedirection();
 
 app.UseCors(CorsOptions.PolicyName);
 
+app.Use(async (context, next) =>
+{
+    if (context.Request.Path.StartsWithSegments("/api"))
+    {
+        var antiforgery = context.RequestServices.GetRequiredService<IAntiforgery>();
+        var tokens = antiforgery.GetAndStoreTokens(context);
+        if (!string.IsNullOrEmpty(tokens.RequestToken))
+        {
+            context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
+            {
+                HttpOnly = false,
+                Path = "/",
+                IsEssential = true,
+                SameSite = sameSite,
+                Secure = sameSite == SameSiteMode.None
+            });
+        }
+    }
+
+    await next(context);
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -98,6 +141,7 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 await IdentityDataSeeder.SeedRolesAsync(app.Services);
+await IdentityDataSeeder.SeedAdminAsync(app.Services, app.Configuration);
 await PromoCodeSeeder.SeedAsync(app.Services);
 
 app.Run();
