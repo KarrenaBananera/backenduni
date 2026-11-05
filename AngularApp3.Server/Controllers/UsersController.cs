@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace AngularApp3.Server.Controllers;
 
 [ApiController]
-[Route("api/auth")]
-public class AuthController : ControllerBase
+[Route("api/users")]
+public class UsersController : ControllerBase
 {
     private readonly IAuthService _authService;
 
-    public AuthController(IAuthService authService)
+    public UsersController(IAuthService authService)
     {
         _authService = authService;
     }
