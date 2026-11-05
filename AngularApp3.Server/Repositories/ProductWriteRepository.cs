@@ -32,19 +32,27 @@ public class ProductWriteRepository : IProductWriteRepository
 
         _dbContext.Products.Add(product);
         await _dbContext.SaveChangesAsync(cancellationToken);
+        return ToDto(product);
+    }
 
-        return new ProductDto
+    public async Task<ProductDto?> UpdateAsync(int id, CreateProductRequest request, CancellationToken cancellationToken = default)
+    {
+        var product = await _dbContext.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+        if (product is null)
         {
-            Id = product.Id,
-            Title = product.Title,
-            Description = product.Description,
-            Price = product.Price,
-            Rating = product.Rating,
-            Images = product.Images,
-            Characteristics = JsonSerializer.Deserialize<Dictionary<string, string>>(product.Characteristics) ?? new(),
-            StockQuantity = product.StockQuantity,
-            CreatedAt = product.CreatedAt
-        };
+            return null;
+        }
+
+        product.Title = request.Title.Trim();
+        product.Description = request.Description.Trim();
+        product.Price = request.Price;
+        product.Rating = request.Rating;
+        product.Images = request.Images;
+        product.Characteristics = JsonSerializer.Serialize(request.Characteristics);
+        product.StockQuantity = request.StockQuantity;
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+        return ToDto(product);
     }
 
     public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
@@ -63,4 +71,17 @@ public class ProductWriteRepository : IProductWriteRepository
         await _dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }
+
+    private static ProductDto ToDto(Product product) => new()
+    {
+        Id = product.Id,
+        Title = product.Title,
+        Description = product.Description,
+        Price = product.Price,
+        Rating = product.Rating,
+        Images = product.Images,
+        Characteristics = JsonSerializer.Deserialize<Dictionary<string, string>>(product.Characteristics) ?? new(),
+        StockQuantity = product.StockQuantity,
+        CreatedAt = product.CreatedAt
+    };
 }

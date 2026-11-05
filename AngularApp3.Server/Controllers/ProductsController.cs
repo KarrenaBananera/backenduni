@@ -56,6 +56,35 @@ public class ProductsController : ControllerBase
     }
 
     [Authorize(Roles = AppRoles.Admin)]
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Update(int id, [FromBody] CreateProductRequest request, CancellationToken cancellationToken)
+    {
+        if (request.Images.Any(image => !IsHttpUrl(image)))
+        {
+            return BadRequest(new { error = "Images must contain at least 3 http(s) URLs." });
+        }
+
+        if (request.Characteristics.Any(item => string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value)))
+        {
+            return BadRequest(new { error = "Characteristic keys and values must not be empty." });
+        }
+
+        var product = await _productWriteRepository.UpdateAsync(id, request, cancellationToken);
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        await _productService.InvalidateCatalogAsync(cancellationToken);
+        return Ok(product);
+    }
+
+    [Authorize(Roles = AppRoles.Admin)]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
