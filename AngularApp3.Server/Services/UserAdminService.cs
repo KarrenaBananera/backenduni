@@ -17,29 +17,45 @@ public class UserAdminService : IUserAdminService
         _userManager = userManager;
     }
 
-    public async Task<IReadOnlyList<UserDto>> GetUsersAsync(string? search, CancellationToken cancellationToken = default)
+    public async Task<PagedUsersResponse> GetUsersAsync(UserQueryRequest request, CancellationToken cancellationToken = default)
     {
+        var page = request.Page < 1 ? 1 : request.Page;
+        var limit = request.Limit < 1 ? 10 : request.Limit;
         var query = _userManager.Users.AsNoTracking();
 
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            var pattern = $"%{search.Trim()}%";
+            var pattern = $"%{request.Search.Trim()}%";
             query = query.Where(user =>
                 (user.UserName != null && EF.Functions.ILike(user.UserName, pattern)) ||
                 (user.Email != null && EF.Functions.ILike(user.Email, pattern)));
         }
 
+        var totalItems = await query.CountAsync(cancellationToken);
+        var totalPages = totalItems == 0 ? 0 : (int)Math.Ceiling(totalItems / (double)limit);
         var users = await query
             .OrderBy(user => user.UserName)
+            .Skip((page - 1) * limit)
+            .Take(limit)
             .ToListAsync(cancellationToken);
 
-        var result = new List<UserDto>(users.Count);
+        var items = new List<UserDto>(users.Count);
         foreach (var user in users)
         {
-            result.Add(await ToDtoAsync(user));
+            items.Add(await ToDtoAsync(user));
         }
 
-        return result;
+        return new PagedUsersResponse
+        {
+            Items = items,
+            Meta = new DTOs.Products.PaginationMeta
+            {
+                TotalItems = totalItems,
+                TotalPages = totalPages,
+                CurrentPage = page,
+                Limit = limit
+            }
+        };
     }
 
     public async Task<ServiceResult<UserDto>> GrantAdminAsync(string userId, CancellationToken cancellationToken = default)

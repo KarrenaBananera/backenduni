@@ -46,7 +46,7 @@ public class CartService : ICartService
 
         if (item is null)
         {
-            cart.Items.Add(new CartItem
+            _dbContext.CartItems.Add(new CartItem
             {
                 CartId = cart.Id,
                 ProductId = product.Id,
@@ -159,6 +159,7 @@ public class CartService : ICartService
                 Id = item.Id,
                 ProductId = item.ProductId,
                 Title = item.Product.Title,
+                ImageUrl = item.Product.Images.FirstOrDefault(),
                 Price = item.Product.Price,
                 Quantity = item.Quantity,
                 LineTotal = item.Product.Price * item.Quantity

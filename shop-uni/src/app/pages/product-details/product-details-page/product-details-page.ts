@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ProductService } from '../../../services/product-service';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -9,6 +9,7 @@ import { SpecificationComponent } from "../specification-component/specification
 import { StarsComponent } from "../../../shared/components/stars-component/stars-component";
 import { CartService } from '../../../services/cart-service';
 import { ToastrService } from 'ngx-toastr';
+import { Product } from '../../../shared/models/product';
 
 @Component({
   selector: 'app-product-details-page',
@@ -23,6 +24,7 @@ export class ProductDetailsPage {
    toastr = inject(ToastrService);
 
    amount = signal(1);
+   product = signal<Product | null>(null);
    clickIncreace()
    {
     this.amount.update(x => x+1);
@@ -45,11 +47,18 @@ export class ProductDetailsPage {
     { initialValue: undefined }
   );
 
+  constructor() {
+    effect(() => {
+      const id = this.idSignal();
+      if (!id) {
+        this.product.set(null);
+        return;
+      }
 
-   product = computed(() => {
-    const id = this.idSignal();
-    const products = this.productService.products();
-    if (!id || products.length === 0) return undefined; 
-    return products.find(p => p.id === id) ?? null; 
-  });
+      this.productService.getById(id).subscribe({
+        next: (item) => this.product.set(item),
+        error: () => this.product.set(null),
+      });
+    });
+  }
 }

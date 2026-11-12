@@ -1,0 +1,75 @@
+<div class="container">
+  <h1>New product</h1>
+  <p class="subtitle">Title, description, price, and at least three images</p>
+
+  <form class="form" #form="ngForm" (ngSubmit)="add(form)">
+    <label>
+      Title
+      <input type="text" name="title" required maxlength="200" [(ngModel)]="title" />
+    </label>
+
+    <label>
+      Description
+      <textarea name="description" required rows="4" [(ngModel)]="description"></textarea>
+    </label>
+
+    <div class="numbers">
+      <label>
+        Price
+        <input type="number" name="price" required min="0" step="0.01" [(ngModel)]="price" />
+      </label>
+      <label>
+        Rating
+        <input type="number" name="rating" required min="0" max="5" step="0.1" [(ngModel)]="rating" />
+      </label>
+      <label>
+        Stock
+        <input type="number" name="stock" required min="0" step="1" [(ngModel)]="stockQuantity" />
+      </label>
+    </div>
+
+    <fieldset>
+      <legend>Images</legend>
+      <p class="hint">Upload files or paste http(s) URLs. Three are required.</p>
+      <div class="image-add">
+        <input type="url" name="imageUrl" placeholder="https://" [(ngModel)]="imageUrl" />
+        <button type="button" (click)="addImageUrl()">Add URL</button>
+        <label class="upload">
+          Upload
+          <input type="file" accept="image/*" multiple (change)="onFiles($event)" />
+        </label>
+      </div>
+      <ul class="images">
+        @for (image of images(); track $index) {
+          <li>
+            <img [src]="image" alt="" />
+            <span>{{ image }}</span>
+            <button type="button" (click)="removeImage($index)">Remove</button>
+          </li>
+        } @empty {
+          <li class="empty">No images yet</li>
+        }
+      </ul>
+    </fieldset>
+
+    <fieldset>
+      <legend>Specifications</legend>
+      @for (row of characteristics; track $index) {
+        <div class="spec">
+          <input [name]="'specKey' + $index" placeholder="Name" [(ngModel)]="row.key" />
+          <input [name]="'specValue' + $index" placeholder="Value" [(ngModel)]="row.value" />
+          <button type="button" (click)="removeCharacteristic($index)">Remove</button>
+        </div>
+      }
+      <button type="button" class="secondary" (click)="addCharacteristic()">Add specification</button>
+    </fieldset>
+
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+
+    <button type="submit" [disabled]="pending() || uploading()">
+      {{ uploading() ? 'Uploading image…' : 'Create product' }}
+    </button>
+  </form>
+</div>

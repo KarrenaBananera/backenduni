@@ -1,6 +1,7 @@
 import { Component, HostListener, inject } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { CartService } from '../../../services/cart-service';
+import { AuthService } from '../../../services/auth-service';
 
 @Component({
   selector: 'app-header-component',
@@ -11,6 +12,7 @@ import { CartService } from '../../../services/cart-service';
 export class HeaderComponent {
   dropDownOn = false;
   cart = inject(CartService);
+  auth = inject(AuthService);
   onDropDownClick() {
     this.dropDownOn = !this.dropDownOn;
   }

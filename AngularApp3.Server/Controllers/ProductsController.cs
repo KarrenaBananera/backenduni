@@ -11,13 +11,16 @@ namespace AngularApp3.Server.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly ICachedProductService _productService;
+    private readonly IProductReadRepository _productReadRepository;
     private readonly IProductWriteRepository _productWriteRepository;
 
     public ProductsController(
         ICachedProductService productService,
+        IProductReadRepository productReadRepository,
         IProductWriteRepository productWriteRepository)
     {
         _productService = productService;
+        _productReadRepository = productReadRepository;
         _productWriteRepository = productWriteRepository;
     }
 
@@ -30,6 +33,20 @@ public class ProductsController : ControllerBase
     {
         var result = await _productService.GetProductsAsync(query, cancellationToken);
         return Ok(result);
+    }
+
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById(int id, CancellationToken cancellationToken)
+    {
+        var product = await _productReadRepository.GetByIdAsync(id, cancellationToken);
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(product);
     }
 
     [Authorize(Roles = AppRoles.Admin)]

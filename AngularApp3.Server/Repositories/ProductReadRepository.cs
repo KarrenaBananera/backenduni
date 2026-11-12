@@ -36,18 +36,7 @@ public class ProductReadRepository : IProductReadRepository
             .Take(limit)
             .ToListAsync(cancellationToken);
 
-        var items = pageItems.Select(p => new ProductDto
-        {
-            Id = p.Id,
-            Title = p.Title,
-            Description = p.Description,
-            Price = p.Price,
-            Rating = p.Rating,
-            Images = p.Images,
-            Characteristics = JsonSerializer.Deserialize<Dictionary<string, string>>(p.Characteristics) ?? new(),
-            StockQuantity = p.StockQuantity,
-            CreatedAt = p.CreatedAt
-        }).ToList();
+        var items = pageItems.Select(ToDto).ToList();
 
         return new PagedProductsResponse
         {
@@ -89,6 +78,27 @@ public class ProductReadRepository : IProductReadRepository
 
         return query;
     }
+
+    public async Task<ProductDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var product = await _dbContext.Products.AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+
+        return product is null ? null : ToDto(product);
+    }
+
+    private static ProductDto ToDto(Product product) => new()
+    {
+        Id = product.Id,
+        Title = product.Title,
+        Description = product.Description,
+        Price = product.Price,
+        Rating = product.Rating,
+        Images = product.Images,
+        Characteristics = JsonSerializer.Deserialize<Dictionary<string, string>>(product.Characteristics) ?? new(),
+        StockQuantity = product.StockQuantity,
+        CreatedAt = product.CreatedAt
+    };
 
     private static IQueryable<Product> ApplySorting(
         IQueryable<Product> query,

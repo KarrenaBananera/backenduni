@@ -19,9 +19,6 @@ export class OrderPageComponent {
 
   onApplyClick()
   {
-    if (this.promoCode === "BUILD10")
-    {
-      this.cart.discountPercent.set(0.1);
-    }
+    this.cart.applyPromo(this.promoCode);
   }
 }

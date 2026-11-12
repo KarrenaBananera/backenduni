@@ -5,6 +5,6 @@ namespace AngularApp3.Server.Services.Interfaces;
 
 public interface IUserAdminService
 {
-    Task<IReadOnlyList<UserDto>> GetUsersAsync(string? search, CancellationToken cancellationToken = default);
+    Task<PagedUsersResponse> GetUsersAsync(UserQueryRequest query, CancellationToken cancellationToken = default);
     Task<ServiceResult<UserDto>> GrantAdminAsync(string userId, CancellationToken cancellationToken = default);
 }

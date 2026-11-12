@@ -96,6 +96,29 @@
   flex-shrink: 0;
 }
 
+.account-email {
+  color: #364153;
+  font-size: 14px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-button {
+  border: none;
+  background: none;
+  color: #364153;
+  font-size: 16px;
+  text-decoration: none;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.account-button:hover {
+  color: var(--primary-buttons-color);
+}
+
 .cart-link {
   position: relative;
   display: flex;

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using System.Text;
 using AngularApp3.Server.Configuration;
 using AngularApp3.Server.Data;
@@ -5,6 +6,7 @@ using AngularApp3.Server.Data.Entities;
 using AngularApp3.Server.Extensions;
 using AngularApp3.Server.Identity;
 using AngularApp3.Server.Repositories;
+using AngularApp3.Server.OpenApi;
 using AngularApp3.Server.Services;
 using AngularApp3.Server.Services.Interfaces;
 using Microsoft.AspNetCore.Antiforgery;
@@ -58,7 +60,8 @@ builder.Services
             ValidAudience = jwt.Audience,
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Key)),
             ClockSkew = TimeSpan.FromMinutes(1),
-            RoleClaimType = System.Security.Claims.ClaimTypes.Role
+            NameClaimType = ClaimTypes.Email,
+            RoleClaimType = ClaimTypes.Role
         };
     });
 
@@ -87,29 +90,37 @@ builder.Services.AddScoped<IProductReadRepository, ProductReadRepository>();
 builder.Services.AddScoped<IProductWriteRepository, ProductWriteRepository>();
 builder.Services.AddScoped<ICachedProductService, CachedProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IPromoCodeService, PromoCodeService>();
 
 builder.Services.Configure<SupabaseStorageOptions>(builder.Configuration.GetSection(SupabaseStorageOptions.SectionName));
 builder.Services.AddScoped<IImageStorage, SupabaseImageStorage>();
 
-builder.Services.AddControllers(options =>
+builder.Services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+    options.AddOperationTransformer<ProtectedOperationTransformer>();
+});
 
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.MapStaticAssets();
 
-if (app.Environment.IsDevelopment())
+app.MapOpenApi();
+app.UseSwaggerUI(options =>
 {
-    app.MapOpenApi();
-}
+    options.SwaggerEndpoint("/openapi/v1.json", "AngularApp3");
+});
 
 app.UseHttpsRedirection();
 
 app.UseCors(CorsOptions.PolicyName);
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Use(async (context, next) =>
 {
@@ -132,9 +143,6 @@ app.Use(async (context, next) =>
 
     await next(context);
 });
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapControllers();
 

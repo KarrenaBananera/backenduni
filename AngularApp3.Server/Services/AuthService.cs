@@ -107,6 +107,7 @@ public class AuthService : IAuthService
             new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.Name, user.Email ?? user.Id),
             new(ClaimTypes.Email, user.Email ?? string.Empty)
         };
 

@@ -7,7 +7,7 @@ namespace AngularApp3.Server.Data.Entities;
 [Index(nameof(CartId), nameof(ProductId), IsUnique = true)]
 public class CartItem
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
 
     public Guid CartId { get; set; }
 

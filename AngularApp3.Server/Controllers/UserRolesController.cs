@@ -19,12 +19,12 @@ public class UserRolesController : ControllerBase
     }
 
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<UserDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PagedUsersResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> GetUsers([FromQuery] string? search, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUsers([FromQuery] UserQueryRequest query, CancellationToken cancellationToken)
     {
-        var users = await _userAdminService.GetUsersAsync(search, cancellationToken);
+        var users = await _userAdminService.GetUsersAsync(query, cancellationToken);
         return Ok(users);
     }
 

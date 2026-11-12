@@ -1,131 +1,160 @@
-import { computed, Injectable, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import { Product } from '../shared/models/product';
+import { APP_CONFIG } from '../app-config';
+import { AuthService } from './auth-service';
 
 export class ProductEntry {
   quantity = signal(0);
+  cartItemId = '';
   constructor(public product: Product) {}
+}
+
+interface CartItemDto {
+  id: string;
+  productId: number;
+  title: string;
+  imageUrl: string | null;
+  price: number;
+  quantity: number;
+}
+
+interface CartDto {
+  items: CartItemDto[];
+  subtotal: number;
+  discountPercentage: number;
+  discountAmount: number;
+  total: number;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class CartService {
-  private readonly STORAGE_KEY = 'cart-data';
-
-  private productsMap = new Map<number, ProductEntry>();
+  private http = inject(HttpClient);
+  private apiUrl = inject(APP_CONFIG).apiUrl.replace(/\/$/, '');
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
   productsCount = signal(0);
-
   itemsSignal = signal<ProductEntry[]>([]);
-  
-  subTotalPrice = computed ( () =>
-  {
-    let sum = 0;
-    for (const product of this.itemsSignal())
-    {
-      sum += product.product.price * product.quantity();
-    }
-    return sum;
-  });
-
-  taxPrice = computed (() => Number((this.subTotalPrice() * 0.08).toFixed(2)) );
-
+  subTotalPrice = signal(0);
   discountPercent = signal(0);
-
-  discountPrice = computed( () => Number((this.subTotalPrice()*this.discountPercent()).toFixed(2)));
-
-  totalPrice = computed (()=>Number((
-    this.subTotalPrice()
-  + this.taxPrice() 
-  - this.discountPrice())
-  .toFixed(2)));
+  discountPrice = signal(0);
+  taxPrice = computed(() => Number((this.subTotalPrice() * 0.08).toFixed(2)));
+  totalPrice = computed(() =>
+    Number((this.subTotalPrice() + this.taxPrice() - this.discountPrice()).toFixed(2)),
+  );
 
   constructor() {
-    this.loadFromStorage();
-  }
-
-  private loadFromStorage() {
-    const data = localStorage.getItem(this.STORAGE_KEY);
-    if (!data) return;
-
-    try {
-      const parsed = JSON.parse(data);
-      if (Array.isArray(parsed)) {
-        this.productsMap = new Map(
-          parsed.map(item => {
-            const entry = new ProductEntry(item.product);
-            entry.quantity.set(item.quantity);
-            return [item.product.id, entry];
-          })
-        );
-        this.updateCount();
+    effect(() => {
+      if (this.auth.token()) {
+        this.refresh();
+      } else {
+        this.clearState();
       }
-    } catch (e) {
-    }
-  }
-
-  private saveToStorage() {
-    const data = Array.from(this.productsMap.values()).map(entry => ({
-      product: entry.product,
-      quantity: entry.quantity()
-    }));
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
-  }
-
-  private updateCount() {
-    let total = 0;
-    for (const entry of this.productsMap.values()) {
-      total += entry.quantity();
-    }
-    this.productsCount.set(total);
-
-    this.itemsSignal.set(Array.from(this.productsMap.values()));
-
-    this.saveToStorage();
+    });
   }
 
   addProduct(product: Product) {
-    const id = product.id;
-    const existing = this.productsMap.get(id);
-    if (existing) {
-      existing.quantity.set(existing.quantity() + 1);
-    } else {
-      const entry = new ProductEntry(product);
-      entry.quantity.set(1);
-      this.productsMap.set(id, entry);
-    }
-    this.updateCount();
+    this.addProducts(product, 1);
   }
 
   addProducts(product: Product, count: number) {
-    const id = product.id;
-    const existing = this.productsMap.get(id);
-    if (existing) {
-      existing.quantity.set(existing.quantity() + count);
-    } else {
-      const entry = new ProductEntry(product);
-      entry.quantity.set(count);
-      this.productsMap.set(id, entry);
+    if (!this.ensureSignedIn()) {
+      return;
     }
-    this.updateCount();
+
+    this.http
+      .post<CartDto>(`${this.apiUrl}/cart/items`, { productId: product.id, quantity: count })
+      .subscribe((cart) => this.apply(cart));
   }
 
   removeProduct(product: Product) {
-    const id = product.id;
-    const existing = this.productsMap.get(id);
-    if (existing) {
-      const newQty = existing.quantity() - 1;
-      if (newQty <= 0) {
-        this.productsMap.delete(id);
-      } else {
-        existing.quantity.set(newQty);
-      }
-      this.updateCount();
+    const entry = this.itemsSignal().find((item) => item.product.id === product.id);
+    if (!entry || !this.ensureSignedIn()) {
+      return;
     }
+
+    if (entry.quantity() <= 1) {
+      this.clearProduct(product);
+      return;
+    }
+
+    this.http
+      .patch<CartDto>(`${this.apiUrl}/cart/items/${entry.cartItemId}`, {
+        quantity: entry.quantity() - 1,
+      })
+      .subscribe((cart) => this.apply(cart));
   }
 
   clearProduct(product: Product) {
-    this.productsMap.delete(product.id);
-    this.updateCount();
+    const entry = this.itemsSignal().find((item) => item.product.id === product.id);
+    if (!entry || !this.ensureSignedIn()) {
+      return;
+    }
+
+    this.http
+      .delete<CartDto>(`${this.apiUrl}/cart/items/${entry.cartItemId}`)
+      .subscribe((cart) => this.apply(cart));
+  }
+
+  applyPromo(code: string) {
+    if (!this.ensureSignedIn()) {
+      return;
+    }
+
+    this.http
+      .post<CartDto>(`${this.apiUrl}/cart/apply-promo`, { code })
+      .subscribe((cart) => this.apply(cart));
+  }
+
+  private refresh() {
+    this.http.get<CartDto>(`${this.apiUrl}/cart`).subscribe((cart) => this.apply(cart));
+  }
+
+  private apply(cart: CartDto) {
+    const entries = cart.items.map((item) => {
+      const image = item.imageUrl ?? '';
+      const product = new Product(
+        item.productId,
+        item.title,
+        image,
+        image ? [image] : [],
+        {},
+        item.price,
+        0,
+        '',
+        '',
+      );
+      const entry = new ProductEntry(product);
+      entry.quantity.set(item.quantity);
+      entry.cartItemId = item.id;
+      return entry;
+    });
+
+    this.itemsSignal.set(entries);
+    this.productsCount.set(entries.reduce((sum, entry) => sum + entry.quantity(), 0));
+    this.subTotalPrice.set(cart.subtotal);
+    this.discountPercent.set(cart.discountPercentage / 100);
+    this.discountPrice.set(cart.discountAmount);
+  }
+
+  private clearState() {
+    this.itemsSignal.set([]);
+    this.productsCount.set(0);
+    this.subTotalPrice.set(0);
+    this.discountPercent.set(0);
+    this.discountPrice.set(0);
+  }
+
+  private ensureSignedIn() {
+    if (this.auth.isSignedIn()) {
+      return true;
+    }
+
+    this.router.navigateByUrl('/account');
+    return false;
   }
 }
