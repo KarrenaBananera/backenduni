@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { tap } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { APP_CONFIG } from '../app-config';
 
 export interface AuthResponse {
   token: string;
@@ -15,6 +15,7 @@ export interface AuthResponse {
 })
 export class AuthService {
   private http = inject(HttpClient);
+  private apiUrl = inject(APP_CONFIG).apiUrl.replace(/\/$/, '');
   private readonly storageKey = 'auth-token';
 
   readonly token = signal<string | null>(localStorage.getItem(this.storageKey));
@@ -22,13 +23,13 @@ export class AuthService {
 
   register(email: string, password: string) {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/users/register`, { email, password })
+      .post<AuthResponse>(`${this.apiUrl}/users/register`, { email, password })
       .pipe(tap((response) => this.store(response)));
   }
 
   login(email: string, password: string) {
     return this.http
-      .post<AuthResponse>(`${environment.apiUrl}/users/login`, { email, password })
+      .post<AuthResponse>(`${this.apiUrl}/users/login`, { email, password })
       .pipe(tap((response) => this.store(response)));
   }
 

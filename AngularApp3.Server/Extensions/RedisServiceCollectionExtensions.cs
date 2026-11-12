@@ -18,6 +18,9 @@ public static class RedisServiceCollectionExtensions
 
             var redisConfiguration = ConfigurationOptions.Parse(connectionString);
             redisConfiguration.AbortOnConnectFail = false;
+            redisConfiguration.ConnectTimeout = 5000;
+            redisConfiguration.SyncTimeout = 5000;
+            redisConfiguration.AsyncTimeout = 5000;
             return ConnectionMultiplexer.Connect(redisConfiguration);
         });
 

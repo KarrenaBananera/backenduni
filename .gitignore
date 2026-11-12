@@ -16,6 +16,9 @@
 # Mono auto generated files
 mono_crash.*
 
+# Uploaded images when Supabase is not configured
+AngularApp3.Server/App_Data/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -363,3 +366,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /angularapp3.client
 /AngularApp3.Server/AngularApp3.Server.http
+.env

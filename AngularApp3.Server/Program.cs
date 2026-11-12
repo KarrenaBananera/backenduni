@@ -140,6 +140,7 @@ app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
 
+await DatabaseMigrator.MigrateAsync(app.Services);
 await IdentityDataSeeder.SeedRolesAsync(app.Services);
 await IdentityDataSeeder.SeedAdminAsync(app.Services, app.Configuration);
 await PromoCodeSeeder.SeedAsync(app.Services);

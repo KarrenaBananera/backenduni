@@ -29,6 +29,11 @@ public class CachedProductService : ICachedProductService
         ProductQueryRequest query,
         CancellationToken cancellationToken = default)
     {
+        if (!_redis.IsConnected)
+        {
+            return await _products.GetProductsAsync(query, cancellationToken);
+        }
+
         var cacheKey = ProductCacheKey.ForQuery(_options.KeyPrefix, query);
         var database = _redis.GetDatabase();
 
@@ -47,6 +52,11 @@ public class CachedProductService : ICachedProductService
     {
         cancellationToken.ThrowIfCancellationRequested();
 
+        if (!_redis.IsConnected)
+        {
+            return;
+        }
+
         try
         {
             var database = _redis.GetDatabase();
@@ -59,7 +69,7 @@ public class CachedProductService : ICachedProductService
 
             await database.KeyDeleteAsync(redisKeys);
         }
-        catch (RedisException)
+        catch (Exception exception) when (exception is RedisException or TimeoutException)
         {
         }
     }
@@ -76,7 +86,7 @@ public class CachedProductService : ICachedProductService
 
             return JsonSerializer.Deserialize<PagedProductsResponse>((string)cached!, JsonOptions);
         }
-        catch (Exception exception) when (exception is RedisException or JsonException)
+        catch (Exception exception) when (exception is RedisException or TimeoutException or JsonException)
         {
             return null;
         }
@@ -92,7 +102,7 @@ public class CachedProductService : ICachedProductService
             await database.StringSetAsync(cacheKey, payload, ttl);
             await database.SetAddAsync(ProductCacheKey.Index(_options.KeyPrefix), cacheKey);
         }
-        catch (RedisException)
+        catch (Exception exception) when (exception is RedisException or TimeoutException)
         {
         }
     }

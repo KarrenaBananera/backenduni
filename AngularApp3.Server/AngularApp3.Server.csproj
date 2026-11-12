@@ -4,9 +4,9 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <SpaRoot>..\angularapp3.client</SpaRoot>
+    <SpaRoot>..\shop-uni</SpaRoot>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
-    <SpaProxyServerUrl>https://localhost:24558</SpaProxyServerUrl>
+    <SpaProxyServerUrl>http://localhost:4200</SpaProxyServerUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,12 +24,6 @@
     <PackageReference Include="StackExchange.Redis" Version="3.4.5" />
     <PackageReference Include="Supabase.Storage" Version="8.9.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\angularapp3.client\angularapp3.client.esproj">
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
   </ItemGroup>
 
 </Project>
