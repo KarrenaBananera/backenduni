@@ -1,5 +1,6 @@
 using AngularApp3.Server.DTOs.Products;
 using AngularApp3.Server.Identity;
+using AngularApp3.Server.Services;
 using AngularApp3.Server.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -57,9 +58,9 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Create([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
-        if (request.Images.Any(image => !IsHttpUrl(image)))
+        if (request.Images.Any(image => !IsImageReference(image)))
         {
-            return BadRequest(new { error = "Images must contain at least 3 http(s) URLs." });
+            return BadRequest(new { error = "Each image must be an http(s) URL or an uploaded file." });
         }
 
         if (request.Characteristics.Any(item => string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value)))
@@ -81,9 +82,9 @@ public class ProductsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(int id, [FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
-        if (request.Images.Any(image => !IsHttpUrl(image)))
+        if (request.Images.Any(image => !IsImageReference(image)))
         {
-            return BadRequest(new { error = "Images must contain at least 3 http(s) URLs." });
+            return BadRequest(new { error = "Each image must be an http(s) URL or an uploaded file." });
         }
 
         if (request.Characteristics.Any(item => string.IsNullOrWhiteSpace(item.Key) || string.IsNullOrWhiteSpace(item.Value)))
@@ -119,7 +120,16 @@ public class ProductsController : ControllerBase
         return NoContent();
     }
 
-    private static bool IsHttpUrl(string value) =>
-        Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
-        (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
+    private static bool IsImageReference(string value)
+    {
+        if (Uri.TryCreate(value, UriKind.Absolute, out var uri) &&
+            (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
+        {
+            return true;
+        }
+
+        const string prefix = "/api/images/";
+        return value.StartsWith(prefix, StringComparison.Ordinal) &&
+               LocalImageStore.IsSafeName(value[prefix.Length..]);
+    }
 }

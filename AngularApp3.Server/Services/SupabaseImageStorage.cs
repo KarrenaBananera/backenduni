@@ -29,7 +29,9 @@ public class SupabaseImageStorage : IImageStorage
         string fileName,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(_options.Url) || string.IsNullOrWhiteSpace(_options.ServiceRoleKey))
+        if (string.IsNullOrWhiteSpace(_options.Url) ||
+            string.IsNullOrWhiteSpace(_options.ServiceRoleKey) ||
+            string.IsNullOrWhiteSpace(_options.Bucket))
         {
             return ServiceResult<string>.Failure(
                 "Supabase storage is not configured.",
@@ -55,9 +57,9 @@ public class SupabaseImageStorage : IImageStorage
         }
 
         var objectName = $"{Guid.NewGuid():N}{extension}";
-        var projectUrl = _options.Url.TrimEnd('/');
-        var bucketName = string.IsNullOrWhiteSpace(_options.Bucket) ? "products" : _options.Bucket.Trim('/');
-        var client = new Client($"{projectUrl}/storage/v1", new Dictionary<string, string>
+        var storageUrl = _options.Url.TrimEnd('/');
+        var bucketName = _options.Bucket.Trim('/');
+        var client = new Client(storageUrl, new Dictionary<string, string>
         {
             ["apikey"] = _options.ServiceRoleKey,
             ["Authorization"] = $"Bearer {_options.ServiceRoleKey}"
@@ -84,6 +86,12 @@ public class SupabaseImageStorage : IImageStorage
                 StatusCodes.Status502BadGateway);
         }
 
-        return ServiceResult<string>.Success(bucket.GetPublicUrl(objectName, null));
+        var storedUrl = bucket.GetPublicUrl(objectName, null);
+        if (!string.IsNullOrWhiteSpace(_options.PublicUrl))
+        {
+            storedUrl = storedUrl.Replace(storageUrl, _options.PublicUrl.TrimEnd('/'), StringComparison.Ordinal);
+        }
+
+        return ServiceResult<string>.Success(storedUrl);
     }
 }

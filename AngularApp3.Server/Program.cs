@@ -93,7 +93,9 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IPromoCodeService, PromoCodeService>();
 
 builder.Services.Configure<SupabaseStorageOptions>(builder.Configuration.GetSection(SupabaseStorageOptions.SectionName));
-builder.Services.AddScoped<IImageStorage, SupabaseImageStorage>();
+builder.Services.AddSingleton<LocalImageStore>();
+builder.Services.AddScoped<SupabaseImageStorage>();
+builder.Services.AddScoped<IImageStorage, ConfiguredImageStorage>();
 
 builder.Services.AddControllersWithViews(options =>
 {

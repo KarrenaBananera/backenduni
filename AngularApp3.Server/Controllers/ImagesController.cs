@@ -1,4 +1,5 @@
 using AngularApp3.Server.Identity;
+using AngularApp3.Server.Services;
 using AngularApp3.Server.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,19 +7,21 @@ using Microsoft.AspNetCore.Mvc;
 namespace AngularApp3.Server.Controllers;
 
 [ApiController]
-[Authorize(Roles = AppRoles.Admin)]
 [Route("api/images")]
 public class ImagesController : ControllerBase
 {
     private const long MaxFileSize = 5 * 1024 * 1024;
 
     private readonly IImageStorage _imageStorage;
+    private readonly LocalImageStore _localImages;
 
-    public ImagesController(IImageStorage imageStorage)
+    public ImagesController(IImageStorage imageStorage, LocalImageStore localImages)
     {
         _imageStorage = imageStorage;
+        _localImages = localImages;
     }
 
+    [Authorize(Roles = AppRoles.Admin)]
     [HttpPost]
     [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
@@ -46,5 +49,18 @@ public class ImagesController : ControllerBase
         }
 
         return Ok(new { url = result.Data });
+    }
+
+    [HttpGet("{name}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public IActionResult Get(string name)
+    {
+        if (!_localImages.TryOpen(name, out var stream, out var contentType))
+        {
+            return NotFound();
+        }
+
+        return File(stream, contentType);
     }
 }
