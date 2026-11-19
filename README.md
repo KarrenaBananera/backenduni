@@ -29,7 +29,7 @@ npm start
 
 Администратор: `admin@localhost` / `Admin12345`.
 
-Локальная база берётся из `appsettings.Development.json`. Пароль базы и ключ Storage в репозиторий не входят: на Koyeb их задают переменные `ConnectionStrings__DefaultConnection` и `Supabase__ServiceRoleKey`.
+Локальная база берётся из `appsettings.Development.json`. На Render вставляются те же имена, что в `.env`: `ADMIN_EMAIL`, `JWT_KEY`, `SUPABASE_URL` и остальные. Отдельно переименовывать их в `Admin__Email` не нужно.
 
 ## Docker
 
@@ -51,21 +51,25 @@ docker compose up --build
 
 Файл `.env` в git не попадает. Пример — `.env.example`.
 
+Эти имена одинаковые в `.env`, в Docker Compose и на Render.
+
 | Переменная | Назначение |
 | --- | --- |
 | `ASPNETCORE_ENVIRONMENT` | Окружение API. В примере Compose стоит `Production`. |
 | `ASPNETCORE_URLS` | Адрес, на котором слушает API внутри контейнера. |
-| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Учётная запись и имя базы PostgreSQL. |
+| `ConnectionStrings__DefaultConnection` | Полная строка PostgreSQL. Если её нет, API собирает строку из `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD` и `POSTGRES_DB`. |
+| `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB` | Учётная запись и имя базы. Для облака хост задаётся в `ConnectionStrings__DefaultConnection`. |
 | `JWT_ISSUER`, `JWT_AUDIENCE`, `JWT_KEY` | Проверка JWT. `JWT_KEY` не короче 32 символов. |
 | `ADMIN_EMAIL`, `ADMIN_PASSWORD` | Первый администратор. Если одно из полей пустое, учётка не создаётся. Повторный запуск пароль не меняет. |
-| `CORS_ALLOWED_ORIGINS` | Разрешённые origin через запятую. Нужны, если фронтенд открыт с другого адреса, чем API. |
-| `ANTIFORGERY_SAMESITE` | `Lax` для одного сайта, `None` для запросов с другого origin по HTTPS. |
-| `SUPABASE_URL` | Базовый адрес Storage, который без изменений получает официальный клиент. В примере это `http://storage:5000/storage/v1`. Для облака укажите `https://<project>.supabase.co/storage/v1`. |
-| `SUPABASE_PUBLIC_URL` | Тот же базовый адрес, но доступный браузеру. Им заменяется `SUPABASE_URL` в готовой ссылке. В примере это `http://localhost:54321/storage/v1`. Для облака оставьте пустым. |
-| `SUPABASE_OBJECT_PREFIX`, `SUPABASE_PUBLIC_PREFIX` | Пути локального хранилища для загрузки и для публичной выдачи файла. Облачному Supabase не нужны. |
-| `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_BUCKET` | Ключ и бакет. Если URL, ключ или бакет пустые, API сохраняет файл у себя и отдаёт его по `/api/images/{имя}`. |
-| `FRONTEND_API_URL` | Адрес API для браузера. По умолчанию `/api`. |
-| `FRONTEND_API_PROXY` | Куда nginx фронтенда проксирует `/api`. По умолчанию `http://app:8080`. |
+| `CORS_ALLOWED_ORIGINS` | Разрешённые origin через запятую. Нужны, если браузер ходит на API с другого адреса. |
+| `ANTIFORGERY_SAMESITE` | `Lax`, когда сайт проксирует `/api` на тот же адрес. `None`, если браузер вызывает API на другом домене. |
+| `SUPABASE_URL` | Адрес Storage. Для облака это `https://<project>.supabase.co/storage/v1`. |
+| `SUPABASE_PUBLIC_URL` | Подмена адреса в готовой ссылке. Для облака оставьте пустым. |
+| `SUPABASE_OBJECT_PREFIX`, `SUPABASE_PUBLIC_PREFIX` | Только для локального контейнера картинок. Облачный Supabase и API их не читают. |
+| `SUPABASE_SERVICE_ROLE_KEY`, `SUPABASE_BUCKET` | Секретный ключ и бакет. Если URL, ключ или бакет пустые, API пишет файл на свой диск. |
+| `Redis__ConnectionString` | Redis для каталога, формат `хост:6379,password=...,ssl=True`. |
+| `FRONTEND_API_URL` | Адрес API для браузера. По умолчанию `/api`. Это переменная фронтенда, не API. |
+| `FRONTEND_API_PROXY` | Куда nginx фронтенда проксирует `/api`. В Compose это `http://app:8080`. |
 
 Для отдельного деплоя фронтенда те же значения задаются контейнеру как `API_URL` и `API_PROXY`. Если API на другом домене, укажите полный `API_URL`, например `https://api.example.com/api`, и добавьте origin фронтенда в `CORS_ALLOWED_ORIGINS`. При `API_URL=/api` браузер и API остаются на одном origin, и cookie антифорджери работает с `Lax`.
 
