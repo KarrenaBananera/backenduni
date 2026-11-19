@@ -1,0 +1,21 @@
+<div class="specification">
+  <button class="header" (click)="toggle()" type="button">
+    <span>Technical Specifications</span>
+    <span class="arrow" [class.rotated]="expanded()" [class.rotated]="!expanded()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down text-muted-foreground pointer-events-none size-4 shrink-0 translate-y-0.5 transition-transform duration-200"><path d="m6 9 6 6 6-6"></path></svg>
+    </span>
+  </button>
+
+    @if (expanded()) {
+  <div class="specification-list-wrapper" animate.enter="enter-animation" animate.leaving="leaving-animation">
+    <div class="specification-list">
+      @for (item of fields() | keyvalue; track item.key) {
+        <div class="specification-item">
+          <div class="item-title">{{ item.key }}</div>
+          <div class="item-description">{{ item.value }}</div>
+        </div>
+      }
+    </div>
+  </div>
+}
+</div>

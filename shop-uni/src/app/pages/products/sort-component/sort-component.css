@@ -1,0 +1,14 @@
+.sort-dropdown {
+    width: 200px;
+    height: 39px;
+    padding: 8px 12px;
+    border: 1px solid var(--borders-color);
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    outline: none;
+}
+
+.sort-dropdown:focus {
+    outline: 2px solid var(--primary-buttons-color);
+}

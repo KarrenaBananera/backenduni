@@ -1,0 +1,118 @@
+ .container {
+     max-width: 1250px;
+     margin-left: auto;
+     margin-right: auto;
+     padding: 10px;
+     padding-left: 20px;
+     padding-right: 20px;
+ }
+
+ h1 {
+     font-size: 30px;
+     font-weight: 700;
+     line-height: 36px;
+     letter-spacing: 0.4px;
+     color: #101828;
+     margin-top: 32px;
+     margin-bottom: 8px;
+ }
+
+ .subtitle {
+     font-size: 16px;
+     color: #4A5565;
+     letter-spacing: -0.31px;
+     line-height: 24px;
+     margin-bottom: 32px;
+ }
+
+ .filter-sort-bar {
+     display: flex;
+     flex-direction: column;
+     gap: 12px;
+     margin-bottom: 20px;
+ }
+
+ .filter-show {
+     display: flex;
+     align-items: center;
+ }
+
+ .show-filters-btn {
+     display: inline-flex;
+     align-items: center;
+     gap: 8px;
+     padding: 8px 16px;
+     background-color: white;
+     border: 1px solid #D1D5DC;
+     border-radius: 10px;
+     cursor: pointer;
+     font-size: 16px;
+     line-height: 24px;
+     letter-spacing: -0.31px;
+     color: #0A0A0A;
+     font-weight: 500;
+ }
+
+ .icon {
+     width: 16px;
+     height: 16px;
+     display: inline-flex;
+     align-items: center;
+ }
+
+ .showing-products {
+     color: #4A5565;
+     font-size: 16px;
+     line-height: 24px;
+     letter-spacing: -0.31px;
+     font-weight: 400;
+     margin-left: 8px;
+ }
+
+ .sort-section {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+ }
+
+ .sort-label {
+     font-size: 14px;
+     font-weight: 500;
+     color: #4A5565;
+     line-height: 20px;
+     letter-spacing: -0.15px;
+ }
+
+ .margin-filter {
+     margin-top: 32px;
+     margin-bottom: 32px;
+ }
+.filter
+{
+    display: none;
+}
+.filter.active {
+    display: block;
+}
+ .products {
+     margin-bottom: 32px;
+ }
+
+ @media (min-width: 760px) {
+     .filter-sort-bar {
+         flex-direction: row;
+         justify-content: space-between;
+         align-items: center;
+     }
+
+     .filter-show {
+         flex: 1;
+     }
+
+     .sort-section {
+         margin-left: auto;
+     }
+     h1{
+        font-size: 40px;
+     }
+ }

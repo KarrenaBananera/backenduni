@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.41157996">
+  <PropertyGroup>
+    <StartupCommand>npm start</StartupCommand>
+    <JavaScriptTestRoot>src\</JavaScriptTestRoot>
+    <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <BuildCommand></BuildCommand>
+    <TargetFramework>net10.0</TargetFramework>
+    <TargetPlatformIdentifier></TargetPlatformIdentifier>
+    <TargetPlatformVersion></TargetPlatformVersion>
+    <TargetPlatformMinVersion></TargetPlatformMinVersion>
+  </PropertyGroup>
+</Project>

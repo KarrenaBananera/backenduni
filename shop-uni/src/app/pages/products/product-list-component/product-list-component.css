@@ -1,0 +1,40 @@
+.product-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .product-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.empty-state {
+  grid-column: 1 / -1;  
+  text-align: center;
+  padding: 2rem 0;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+.clear-filters-btn {
+  margin-top: 12px;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--primary-buttons-color);           
+  cursor: pointer;
+  font-weight: 500;
+  font: inherit;
+}
+
+.clear-filters-btn:hover {
+  color: var(--selected-button-color);
+}

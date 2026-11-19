@@ -1,0 +1,37 @@
+<div class="container">
+  <h1>Promo codes</h1>
+  <p class="subtitle">Add a code and a discount between 0 and 100</p>
+
+  <form class="form" (ngSubmit)="add()">
+    <input type="text" name="code" placeholder="Code" required [(ngModel)]="code" />
+    <input
+      type="number"
+      name="discount"
+      placeholder="Discount %"
+      min="0.01"
+      max="99.99"
+      step="0.01"
+      required
+      [(ngModel)]="discountPercentage"
+    />
+    <button type="submit">Add</button>
+  </form>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  <ul class="codes">
+    @for (promoCode of promoCodes(); track promoCode.id) {
+      <li>
+        <div>
+          <p class="code">{{ promoCode.code }}</p>
+          <p class="meta">{{ promoCode.discountPercentage }}%</p>
+        </div>
+        <button type="button" class="delete" (click)="remove(promoCode)">Delete</button>
+      </li>
+    } @empty {
+      <li class="empty">No promo codes</li>
+    }
+  </ul>
+</div>

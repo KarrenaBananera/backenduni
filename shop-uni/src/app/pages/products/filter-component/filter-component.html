@@ -1,0 +1,36 @@
+<div class="filter-container">
+  <div class="filter-group">
+    <div class="filter-label">Minimum Rating</div>
+    <div class="checkboxes">   
+      <button class="checkboxe" [class.active]="filterSettings.filter.ratingFilter() === '5plus'" (click)="selectRating('5plus')">
+        <span>5+ Stars</span>
+      </button>
+      <button class="checkboxe" [class.active]="filterSettings.filter.ratingFilter() === '4plus'" (click)="selectRating('4plus')">
+        <span>4+ Stars</span>
+      </button>
+      <button class="checkboxe" [class.active]="filterSettings.filter.ratingFilter() === '3plus'" (click)="selectRating('3plus')">
+        <span>3+ Stars</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <div class="filter-label">Price range</div>
+    <div class="slider-container">
+      <ngx-slider 
+        [(value)]="sliderMinPrice" 
+        [(highValue)]="sliderMaxPrice" 
+        [options]="sliderOptions">
+      </ngx-slider>
+      <div class="price-labels">
+        <span>${{sliderMinPrice}}</span>
+        <span>${{sliderMaxPrice}}</span>
+      </div>
+    </div>
+  </div> 
+
+  <div class="filter-group button-group">
+    <div class="filter-label" style="visibility: hidden; height: 0; margin: 0;"> </div>
+    <button (click) = "clearFilters()" class="clear-btn">Clear All Filters</button>
+  </div>
+</div>

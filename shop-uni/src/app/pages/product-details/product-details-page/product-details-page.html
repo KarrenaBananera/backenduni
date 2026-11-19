@@ -1,0 +1,99 @@
+<div class="product-page">
+  @if (product(); as product) {
+  <nav class="breadcrumb">
+    <a routerLink="/">Products</a>
+    <span>/</span>
+    <span>{{ product.name }}</span>
+  </nav>
+
+  <div class="product-content">
+    <div class="product-gallery">
+      <app-product-image-component [images]="product.images" />
+    </div>
+
+    <div class="product-details">
+      <h2>{{ product.name }}</h2>
+      <div class="rating-container">
+        <app-stars-component [rating]="product.rating" [size]="24" />
+        <span class="rating">({{product.rating}})</span>
+      </div>
+      <div class="price">
+        <span class="price-value">${{ product.price }}</span>
+        <span class="price-unit">/unit</span>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z">
+            </path>
+            <path d="M12 22V12"></path>
+            <polyline points="3.29 7 12 12 20.71 7"></polyline>
+            <path d="m7.5 4.27 9 5.15"></path>
+          </svg>
+          <div class="feature-text">
+            <strong>Quality Assured</strong>
+            <small>Premium grade material</small>
+          </div>
+        </div>
+        <div class="feature">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"></path>
+            <path d="M15 18H9"></path>
+            <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"></path>
+            <circle cx="17" cy="18" r="2"></circle>
+            <circle cx="7" cy="18" r="2"></circle>
+          </svg>
+          <div class="feature-text">
+            <strong>Fast Delivery</strong>
+            <small>2-5 business days</small>
+          </div>
+        </div>
+        <div class="feature">
+          <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z">
+            </path>
+          </svg>
+          <div class="feature-text">
+            <strong>Warranty</strong>
+            <small>30-day guarantee</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="quantity">
+        <span class="quantity-label">Quantity</span>
+        <div class="quantity-controls">
+          <button class="quantity-btn" (click)="clickDecrease()">-</button>
+          <span class="quantity-value">{{amount()}}</span>
+          <button class="quantity-btn" (click)="clickIncreace()">+</button>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" (click)="onAddToCart()">
+             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="cart-icon"><circle cx="8" cy="21" r="1"></circle><circle cx="19" cy="21" r="1"></circle><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"></path></svg>
+          Add to Cart</button>
+        <button class="btn btn-secondary">Buy Now</button>
+      </div>
+
+      <div class="description">
+        <strong>Description</strong>
+        <p>{{ product.description }}</p>
+      </div>
+
+      <app-specification-component [fields]="product.characteristics" />
+    </div>
+  </div>
+  } @else {
+  <div class="not-found" routerLink="/">
+    <h1 class="error-label">Product not found</h1>
+    <a class="error-link">Return to catalog</a>
+  </div>
+  }
+</div>

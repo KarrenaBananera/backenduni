@@ -1,0 +1,15 @@
+ <div class="product-grid">
+ @for (item of filterService.filteredProducts(); track item.id) {
+    <app-card-component 
+    [product]="item" 
+    (productClick)="onComponentClick($event)" 
+    (addToCart)="OnAddToCartClick($event)"> </app-card-component>
+  }
+  @empty {
+    <div class="empty-state">
+      No products match your filters.
+      <br>
+      <button class="clear-filters-btn" (click)="clearFilter()">Clear filters</button>
+    </div>
+  }
+</div>

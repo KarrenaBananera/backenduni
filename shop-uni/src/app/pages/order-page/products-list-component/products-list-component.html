@@ -1,0 +1,12 @@
+<div class="cart-list">
+  <div class="cart-header">
+    <div class="cart-header-cell cart-header-product">Product</div>
+    <div class="cart-header-cell cart-header-price">Price</div>
+    <div class="cart-header-cell cart-header-quantity">Quantity</div>
+    <div class="cart-header-cell cart-header-total">Total</div>
+  </div>
+
+  @for (item of array()(); track item.product.id; let last = $last) {
+    <app-product-entry [productEntry]="item"  [class.last-item]="last" />
+  }
+</div>
