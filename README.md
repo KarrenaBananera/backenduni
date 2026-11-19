@@ -45,6 +45,8 @@ docker compose up --build
 - Сайт: http://localhost:4200
 - API: http://localhost:8080
 
+Отдельный фронтенд для уже развёрнутого API: на Render создайте Web Service из `shop-uni/Dockerfile`, корень сборки `shop-uni`. Переменные можно не задавать: контейнер слушает порт Render и проксирует `/api` на https://backenduni.onrender.com. Локальный Compose по-прежнему передаёт `API_PROXY=http://app:8080`.
+
 ## Переменные окружения
 
 Файл `.env` в git не попадает. Пример — `.env.example`.
