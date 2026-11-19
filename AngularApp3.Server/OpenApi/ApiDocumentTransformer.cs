@@ -59,7 +59,7 @@ public sealed class ProtectedOperationTransformer : IOpenApiOperationTransformer
                 Name = "X-XSRF-TOKEN",
                 In = ParameterLocation.Header,
                 Required = true,
-                Description = "Value of the XSRF-TOKEN cookie. Any GET /api request sets that cookie.",
+                Description = "In Development, copy the X-XSRF-TOKEN response header from any GET /api request. The same value is stored in the XSRF-TOKEN cookie.",
                 Schema = new OpenApiSchema
                 {
                     Type = JsonSchemaType.String

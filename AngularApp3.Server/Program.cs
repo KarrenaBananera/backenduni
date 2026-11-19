@@ -132,6 +132,11 @@ app.Use(async (context, next) =>
         var tokens = antiforgery.GetAndStoreTokens(context);
         if (!string.IsNullOrEmpty(tokens.RequestToken))
         {
+            if (app.Environment.IsDevelopment())
+            {
+                context.Response.Headers["X-XSRF-TOKEN"] = tokens.RequestToken;
+            }
+
             context.Response.Cookies.Append("XSRF-TOKEN", tokens.RequestToken, new CookieOptions
             {
                 HttpOnly = false,

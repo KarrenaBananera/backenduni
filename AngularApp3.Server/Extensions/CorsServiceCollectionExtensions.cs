@@ -20,7 +20,8 @@ public static class CorsServiceCollectionExtensions
                 policy.WithOrigins(origins)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
-                    .AllowCredentials();
+                    .AllowCredentials()
+                    .WithExposedHeaders("X-XSRF-TOKEN");
             });
         });
 
